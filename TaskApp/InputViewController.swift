@@ -17,8 +17,10 @@ class InputViewController: UIViewController {
     
     @IBOutlet weak var datePicker: UIDatePicker!
     
-    let realm = try! Realm()
+    //タスクを格納する変数。
     var task: Task!
+    
+    let realm = try! Realm()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,11 +33,6 @@ class InputViewController: UIViewController {
         titleTextField.text = task.title
         contentsTextView.text = task.contents
         datePicker.date = task.date
-    }
-    
-    @objc func dismissKeyboard(){
-        // キーボードを閉じる
-        view.endEditing(true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -93,6 +90,12 @@ class InputViewController: UIViewController {
             }
         }
     } // --- ここまで追加 ---
+    
+    @objc func dismissKeyboard(){
+        // キーボードを閉じる
+        view.endEditing(true)
+    }
+    
     
     /*
     // MARK: - Navigation

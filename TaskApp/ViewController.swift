@@ -9,8 +9,11 @@ import UIKit
 import RealmSwift
 import UserNotifications    // 追加
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+    
     @IBOutlet weak var tableView: UITableView!
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     // Realmインスタンスを取得する
     let realm = try! Realm()
@@ -20,17 +23,45 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // 以降内容をアップデートするとリスト内は自動的に更新される。
     var taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)  // ←追加
     
+    var filteredTasks: Results<Task>!  // フィルタリングされたタスクの配列
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        filteredTasks = taskArray  // 初期状態では全タスクを表示
+        
         tableView.fillerRowHeight = UITableView.automaticDimension
         tableView.delegate = self
         tableView.dataSource = self
+        
+        searchBar.delegate = self
     }
     
     // 入力画面から戻ってきた時に TableView を更新させる
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            // 検索テキストが空の場合は全タスクを表示
+            filteredTasks = taskArray
+        } else {
+            // categoryで絞り込
+            filteredTasks = taskArray.where{
+                $0.title.contains(searchText, options: .caseInsensitive)
+            }
+        }
+        tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        // キャンセル時に検索バーをクリアし、全タスクを表示
+        searchBar.text = ""
+        filteredTasks = taskArray
         tableView.reloadData()
     }
     
@@ -40,7 +71,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         if segue.identifier == "cellSegue" {
             let indexPath = self.tableView.indexPathForSelectedRow
-            inputViewController.task = taskArray[indexPath!.row]
+            inputViewController.task = filteredTasks[indexPath!.row]  // 修正箇所
         } else {
             inputViewController.task = Task()
         }
@@ -48,7 +79,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     // データの数（＝セルの数）を返すメソッド
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return taskArray.count
+        return filteredTasks.count  // 修正箇所
     }
     
     // 各セルの内容を返すメソッド
@@ -57,7 +88,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
         // Cellに値を設定する  --- ここから ---
-        let task = taskArray[indexPath.row]
+        let task = filteredTasks[indexPath.row]  // 修正箇所
         var content = cell.defaultContentConfiguration()
         content.text = task.title
         
@@ -87,7 +118,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // --- ここから ---
         if editingStyle == .delete {
             // 削除するタスクを取得する
-            let task = self.taskArray[indexPath.row]
+            let task = self.filteredTasks[indexPath.row]  // 修正箇所
 
             // ローカル通知をキャンセルする
             let center = UNUserNotificationCenter.current()

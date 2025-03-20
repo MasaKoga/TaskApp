@@ -10,6 +10,9 @@ import RealmSwift
 class Task: Object {
     // 管理用 ID。プライマリーキー
     @Persisted(primaryKey: true) var id: ObjectId
+    
+    //分類
+    @Persisted var category = ""
 
     // タイトル
     @Persisted var title = ""

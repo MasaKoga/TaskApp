@@ -90,7 +90,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Cellに値を設定する  --- ここから ---
         let task = filteredTasks[indexPath.row]  // 修正箇所
         var content = cell.defaultContentConfiguration()
-        content.text = task.title
+        content.text = "\(task.category) - \(task.title)"
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"

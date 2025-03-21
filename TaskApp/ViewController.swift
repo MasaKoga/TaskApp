@@ -43,8 +43,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
-    
-    
+        
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
             // 検索テキストが空の場合は全タスクを表示
@@ -117,6 +116,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         // --- ここから ---
         if editingStyle == .delete {
+            
             // 削除するタスクを取得する
             let task = self.filteredTasks[indexPath.row]  // 修正箇所
 
@@ -139,11 +139,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         } // --- ここまで変更 ---
-        
     }
-    
-
-    
-    
 }
 
